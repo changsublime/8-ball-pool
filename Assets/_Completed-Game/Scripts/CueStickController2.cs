@@ -8,8 +8,8 @@ public class CueStickController2 : MonoBehaviour
 {
 	// Create public variables for player speed, and for the Text UI game objects
 	public float speed;
-	public Text countText;
-	public Text winText;
+	public Text playerText;
+	public Text ballText;
 
 	// Create private references to the rigidbody component on the player, and the count of pick up objects picked up so far
 	private Rigidbody rb;
@@ -17,21 +17,106 @@ public class CueStickController2 : MonoBehaviour
 	private Renderer rend;
 	private Vector3 relativePos = new Vector3 (0.0f,-2.5f,-11.0f);
 	private Quaternion startRotation;
+	private Vector3 startPosition;
+	private string firstPlayerBalls = "None";
+	private string secondPlayerBalls = "None";
+	private int firstPlayerCount = 0;
+	private int secondPlayerCount = 0;
+	private bool ballMade = false;
     // Start is called before the first frame update
     void Start()
     {
     	startRotation = transform.rotation;
+    	startPosition = transform.position;
         rb = GetComponent<Rigidbody>();
         //Fetch the Renderer from the GameObject
         rend = GetComponent<Renderer>();
 
-        //Set the main Color of the Material to green
-        rend.material.shader = Shader.Find("_Color");
-        rend.material.SetColor("_Color", Color.blue);
+        playerText.text = "Player1";
+        ballText.text = "None";
 
-        rend.material.shader = Shader.Find("Specular");
-        rend.material.SetColor("_SpecColor", Color.red);
+    }
 
+    public bool noBallsMoving() {
+    	bool ballMoving = false;
+    	bool noBallMoving = true;
+    	for (int i = 0; i < 7; i++) {
+    		ballMoving = GameObject.Find("Solids" + i.ToString()).GetComponent<BallController>().isMoving();
+    		if (ballMoving) {
+    			noBallMoving = false;
+    		}
+    		ballMoving = GameObject.Find("Stripes" + i.ToString()).GetComponent<BallController>().isMoving();
+    		if (ballMoving) {
+    			noBallMoving = false;
+    		}
+    	}
+    	GameObject.Find("8 Ball").GetComponent<BallController>().isMoving();
+    	if (ballMoving) {
+    		noBallMoving = false;
+    	}
+    	GameObject.Find("Cue Ball").GetComponent<PlayerController>().isMoving();
+    	if (ballMoving) {
+    		noBallMoving = false;
+    	}
+    	return noBallMoving;
+    }
+
+    private void resetGame() {
+    	transform.position = startPosition;
+    	transform.rotation = startRotation;
+    	GameObject.Find("Cue Ball").GetComponent<PlayerController>().resetBall();
+    	GameObject.Find("8 Ball").GetComponent<BallController>().resetBall();
+    	for (int i = 0; i < 7; i++) {
+    		GameObject.Find("Solids" + i.ToString()).GetComponent<BallController>().resetBall();
+    		GameObject.Find("Stripes" + i.ToString()).GetComponent<BallController>().resetBall();
+    	}
+    	GameObject.Find("Main Camera").GetComponent<CameraController>().resetCamera();
+    }
+
+    public void madeBall(string tag) {
+    	if (tag == "8 Ball") {
+    		resetGame();
+    	}
+    	else if (!ballMade) {
+    		if (turn) {
+    			firstPlayerBalls = tag;
+    			if (tag == "Stripes") {
+    				secondPlayerBalls = "Solids";
+    			}
+    			else {
+    				secondPlayerBalls = "Stripes";
+    			}
+    			firstPlayerCount += 1;
+    		}
+    		else {
+    			if (tag == "Stripes") {
+    				firstPlayerBalls = "Solids";
+    			}
+    			else {
+    				firstPlayerBalls = "Stripes";
+    			}
+    			secondPlayerBalls = tag;
+    			secondPlayerCount += 1;
+    		}
+    		ballMade = true;
+    		turn = !turn;
+    	}
+    	else {
+    		if (turn && tag == firstPlayerBalls) {
+    			firstPlayerCount += 1;
+    			turn = false;
+    		}
+    		else if (!turn && tag == secondPlayerBalls) {
+    			secondPlayerCount += 1;
+    			turn = true;
+    		}
+    		else if (!turn && tag == firstPlayerBalls) {
+    			firstPlayerCount += 1;
+    		}
+    		else {
+    			secondPlayerCount += 1;
+    		}
+    	}
     }
 
     public void turnChange() {
@@ -41,16 +126,12 @@ public class CueStickController2 : MonoBehaviour
 	    rb.MovePosition(cueBallPos - relativePos);
     	rend.enabled = true;
     	if (turn == true) {
-    		rend.material.shader = Shader.Find("_Color");
-        	rend.material.SetColor("_Color", Color.blue);
-        	rend.material.shader = Shader.Find("Specular");
-        	rend.material.SetColor("_SpecColor", Color.red);
+    		playerText.text = "Player2's Turn";
+    		ballText.text = firstPlayerBalls;
     	}
     	else {
-    		rend.material.shader = Shader.Find("_Color");
-        	rend.material.SetColor("_Color", Color.green);
-        	rend.material.shader = Shader.Find("Specular");
-        	rend.material.SetColor("_SpecColor", Color.red);
+    		playerText.text = "Player1's Turn";
+    		ballText.text = secondPlayerBalls;
     	}
     }
 
@@ -58,8 +139,7 @@ public class CueStickController2 : MonoBehaviour
     void FixedUpdate()
     {
     	var cueBall = GameObject.Find("Cue Ball");
-		var cueBallScript = cueBall.GetComponent<PlayerController>();
-		if (!cueBallScript.isMoving()) {
+		if (noBallsMoving()) {
 			float moveHorizontal = Input.GetAxis ("Horizontal");
 			transform.RotateAround(cueBall.transform.position, Vector3.up, moveHorizontal);
 		}

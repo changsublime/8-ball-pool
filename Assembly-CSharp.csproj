@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\_Completed-Game\Scripts\BallController.cs" />
      <Compile Include="Assets\_Completed-Game\Scripts\CameraController.cs" />
      <Compile Include="Assets\_Completed-Game\Scripts\CueStickController.cs" />
      <Compile Include="Assets\_Completed-Game\Scripts\CueStickController2.cs" />
