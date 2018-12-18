@@ -19,7 +19,7 @@ public class CameraController : MonoBehaviour {
 
 	private bool cueView = true;
 
-	private float animationSpeed = 0.05f;
+	private float animationSpeed = 0.01f;
 
 	// At the start of the game..
 	void Start ()
@@ -54,10 +54,9 @@ public class CameraController : MonoBehaviour {
 				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(90f,90f,0f), animationSpeed);
 				transform.position = Vector3.Lerp(transform.position, new Vector3(0f,25f,0f), animationSpeed);
 			} else {
-				transform.position = Vector3.Lerp(transform.position, cueStick.transform.TransformPoint(rbtRelativeToCue), 0.2f);
-				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(player.transform.position - transform.position, Vector3.up) , 0.2f);
+				transform.position = Vector3.Lerp(transform.position, cueStick.transform.TransformPoint(rbtRelativeToCue), .2f);
+				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(player.transform.position - transform.position, Vector3.up) , .2f);
 			}
-
 			if (Input.GetKeyDown(KeyCode.LeftShift)){
          		cueView = !cueView;
      		}

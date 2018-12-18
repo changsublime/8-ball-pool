@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour {
 	// Create private references to the rigidbody component on the player, and the count of pick up objects picked up so far
 	private Rigidbody rb;
 	private bool moving = false;
-	private bool turnChanged = false;
+	private bool turnChanged = true;
 	private float hitTime = 0f;
 	private float startTime = 0f;
 	private float endTime = 0f;
@@ -81,8 +81,8 @@ public class PlayerController : MonoBehaviour {
 		// Add a physical force to our Player rigidbody using our 'movement' Vector3 above, 
 		// multiplying it by 'speed' - our public player speed that appears in the inspector
 		//rb.AddForce (movement * speed);
-		if (rb.velocity.magnitude < .3 && !(rb.velocity == new Vector3(0f,0f,0f))) {
-			rb.velocity = new Vector3(0f,0f,0f);
+		if (rb.velocity.magnitude < .3 && !(rb.velocity == Vector3.zero)) {
+			rb.velocity = Vector3.zero;
 			moving = false;
 		}
 		if (GameObject.Find("Cue Stick").GetComponent<CueStickController2>().noBallsMoving() && !turnChanged) {
@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour {
 			cameraScript.turnChange();
 			turnChanged = true;
 		}
-		if (rb.velocity != new Vector3(0f,0f,0f)) {
+		if (rb.velocity != Vector3.zero) {
 			moving = true;
 			turnChanged = false;
 			cueStick.GetComponent<Renderer>().enabled = false;

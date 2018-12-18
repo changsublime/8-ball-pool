@@ -10,6 +10,7 @@ public class CueStickController2 : MonoBehaviour
 	public float speed;
 	public Text playerText;
 	public Text ballText;
+	public Text winText;
 
 	// Create private references to the rigidbody component on the player, and the count of pick up objects picked up so far
 	private Rigidbody rb;
@@ -32,9 +33,9 @@ public class CueStickController2 : MonoBehaviour
         //Fetch the Renderer from the GameObject
         rend = GetComponent<Renderer>();
 
-        playerText.text = "Player1";
+        playerText.text = "Player1's Turn";
         ballText.text = "None";
-
+        winText.text = "";
     }
 
     public bool noBallsMoving() {
@@ -50,20 +51,22 @@ public class CueStickController2 : MonoBehaviour
     			noBallMoving = false;
     		}
     	}
-    	GameObject.Find("8 Ball").GetComponent<BallController>().isMoving();
+    	ballMoving = GameObject.Find("8 Ball").GetComponent<BallController>().isMoving();
     	if (ballMoving) {
     		noBallMoving = false;
     	}
-    	GameObject.Find("Cue Ball").GetComponent<PlayerController>().isMoving();
+    	ballMoving = GameObject.Find("Cue Ball").GetComponent<PlayerController>().isMoving();
     	if (ballMoving) {
     		noBallMoving = false;
     	}
     	return noBallMoving;
     }
 
-    private void resetGame() {
+    private IEnumerator resetGame() {
+    	yield return new WaitForSeconds(10);
     	transform.position = startPosition;
     	transform.rotation = startRotation;
+    	ballMade = false;
     	GameObject.Find("Cue Ball").GetComponent<PlayerController>().resetBall();
     	GameObject.Find("8 Ball").GetComponent<BallController>().resetBall();
     	for (int i = 0; i < 7; i++) {
@@ -71,11 +74,35 @@ public class CueStickController2 : MonoBehaviour
     		GameObject.Find("Stripes" + i.ToString()).GetComponent<BallController>().resetBall();
     	}
     	GameObject.Find("Main Camera").GetComponent<CameraController>().resetCamera();
+    	turn = true;
+    	firstPlayerBalls = "None";
+    	secondPlayerBalls = "None";
+    	secondPlayerCount = 0;
+    	firstPlayerCount = 0;
+    	playerText.text = "Player1's Turn";
+        ballText.text = "None";
+        winText.text = "";
     }
 
     public void madeBall(string tag) {
     	if (tag == "8 Ball") {
-    		resetGame();
+    		if (turn) {
+    			if (firstPlayerCount == 7) {
+    				winText.text = "Player1Wins!";
+    			}
+    			else {
+    				winText.text = "Player2Wins!";
+    			}
+    		}
+    		if (!turn) {
+    			if (secondPlayerCount == 7) {
+    				winText.text = "Player2Wins!";
+    			}
+    			else {
+    				winText.text = "Player1Wins!";
+    			}
+    		}
+    		StartCoroutine(resetGame());
     	}
     	else if (!ballMade) {
     		if (turn) {
@@ -126,11 +153,11 @@ public class CueStickController2 : MonoBehaviour
 	    rb.MovePosition(cueBallPos - relativePos);
     	rend.enabled = true;
     	if (turn == true) {
-    		playerText.text = "Player2's Turn";
+    		playerText.text = "Player1's Turn";
     		ballText.text = firstPlayerBalls;
     	}
     	else {
-    		playerText.text = "Player1's Turn";
+    		playerText.text = "Player2's Turn";
     		ballText.text = secondPlayerBalls;
     	}
     }
