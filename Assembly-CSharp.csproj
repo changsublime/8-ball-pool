@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{E8E040EA-7CB9-5602-8302-DA722EFDE5A2}</ProjectGuid>
+    <ProjectGuid>{852F5AC4-B0A5-B835-2078-EB4DECECC394}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -54,23 +54,24 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\_Completed-Game\Scripts\CameraController.cs" />
+     <Compile Include="Assets\_Completed-Game\Scripts\CueStickController.cs" />
+     <Compile Include="Assets\_Completed-Game\Scripts\CueStickController2.cs" />
      <Compile Include="Assets\_Completed-Game\Scripts\PlayerController.cs" />
      <Compile Include="Assets\_Completed-Game\Scripts\Rotator.cs" />
-     <Compile Include="Assets\NewBehaviourScript.cs" />
  <Reference Include="Unity.TextMeshPro.Editor">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.PackageManagerUI.Editor">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.CollabProxy.Editor">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Analytics.DataPrivacy">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -277,19 +278,19 @@
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Advertisements.Editor">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/PackageCache/com.unity.ads@2.3.1/Runtime/UnityEngine.Advertisements.Editor.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/PackageCache/com.unity.ads@2.3.1/Runtime/UnityEngine.Advertisements.Editor.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Advertisements">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/PackageCache/com.unity.ads@2.3.1/Runtime/UnityEngine.Advertisements.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/PackageCache/com.unity.ads@2.3.1/Runtime/UnityEngine.Advertisements.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Analytics.Tracker">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Tracker.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Tracker.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Analytics.Editor">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Editor.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Analytics.StandardEvents">
- <HintPath>/private/var/folders/t4/6kzhmg0j1rv3njs25_x_jbb80000gn/T/11a069632c21943b1a01a0831098cd28/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.StandardEvents.dll</HintPath>
+ <HintPath>/Users/samuelbieler/Documents/final-project-sbcl10/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.StandardEvents.dll</HintPath>
  </Reference>
  <Reference Include="netstandard">
  <HintPath>/Applications/Unity/Unity.app/Contents/NetStandard/ref/2.0.0/netstandard.dll</HintPath>

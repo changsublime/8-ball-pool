@@ -4,6 +4,7 @@
 using UnityEngine.UI;
 
 using System.Collections;
+using System;
 
 public class PlayerController : MonoBehaviour {
 	
@@ -15,7 +16,12 @@ public class PlayerController : MonoBehaviour {
 	// Create private references to the rigidbody component on the player, and the count of pick up objects picked up so far
 	private Rigidbody rb;
 	private int count;
-
+	private bool moving = false;
+	private bool turnChanged = false;
+	private float hitTime = 0f;
+	private float startTime = 0f;
+	private float endTime = 0f;
+	private bool spacePressed = false; 
 	// At the start of the game..
 	void Start ()
 	{
@@ -32,19 +38,56 @@ public class PlayerController : MonoBehaviour {
 		winText.text = "";
 	}
 
+	public bool isMoving() {
+		return moving;
+	}
+
+	void Update() {
+		var cueStick = GameObject.Find("Cue Stick");
+		var cueStickScript = cueStick.GetComponent<CueStickController2>();
+		if (Input.GetKeyDown("space") && !moving && turnChanged && !spacePressed) {
+			startTime = Time.time;
+			spacePressed = true;
+		}
+		if (Input.GetKeyUp("space") && !moving && turnChanged && spacePressed) {
+			endTime = Time.time;
+			hitTime = endTime - startTime;
+			Vector3 direction = transform.position - cueStick.transform.position;
+			direction = new Vector3(direction.x, 0f,  direction.z);
+			direction = direction / direction.magnitude;
+			rb.AddForce(direction * hitTime * speed);
+			spacePressed = false;
+		}
+	}
+
 	// Each physics step..
 	void FixedUpdate ()
 	{
 		// Set some local float variables equal to the value of our Horizontal and Vertical Inputs
-		float moveHorizontal = Input.GetAxis ("Horizontal");
-		float moveVertical = Input.GetAxis ("Vertical");
-
+		var cueStick = GameObject.Find("Cue Stick");
+		var cueStickScript = cueStick.GetComponent<CueStickController2>();
+		var camera = GameObject.Find("Main Camera");
+		var cameraScript = camera.GetComponent<CameraController>();
 		// Create a Vector3 variable, and assign X and Z to feature our horizontal and vertical float variables above
-		Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical);
+		//Vector3 movement = new Vector3 (0.0f, 0.0f, moveVertical);
 
 		// Add a physical force to our Player rigidbody using our 'movement' Vector3 above, 
 		// multiplying it by 'speed' - our public player speed that appears in the inspector
-		rb.AddForce (movement * speed);
+		//rb.AddForce (movement * speed);
+		if (rb.velocity.magnitude < .1 && !(rb.velocity == new Vector3(0f,0f,0f))) {
+			rb.velocity = new Vector3(0f,0f,0f);
+			moving = false;
+		}
+		if (!moving && !turnChanged) {
+			cueStickScript.turnChange();
+			cameraScript.turnChange();
+			turnChanged = true;
+		}
+		if (rb.velocity != new Vector3(0f,0f,0f)) {
+			moving = true;
+			turnChanged = false;
+			cueStick.GetComponent<Renderer>().enabled = false;
+		}
 	}
 
 	// When this game object intersects a collider with 'is trigger' checked, 
