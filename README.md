@@ -90,6 +90,8 @@ Because we are using Lerp() to do all of our camera transformations, everything 
 ### Light Control
 <p>
     <img src="/nightbad.png" alt="nightbad" title="nightbad" width="300" />
+</p>
+<p>
     <em>Night mode before increasing pixel light count</em>
 </p>\
 After being familiar with Unity's Lerp functions, light control was pretty easy to implement. In Unity, light primarily has two components: color and intensity. For the ambient light in the scene, we decided to keep its intensity constant and Lerp the color of the light from a blueish white to near-black. On the 'b' press at the start of the game, the effect is a slow animation from a bright to a nearly invisible scene - so we decided to add more sources of light as it got darker.\
