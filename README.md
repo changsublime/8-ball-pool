@@ -6,13 +6,13 @@
 In order to run the game you can run the 8BallPool.exe file inside of the 8BallPoolWindows+(your sys architecture) folder if you are on Windows. If you are on mac simply run the 8BallPool Application file in the main directory. As our computers are Macs this is the only build that has been tested. You can also run the game by opening the project in Unity and pressing the play button.
 
 ##### Controls
-Press and hold Spacebar key to take a shot when the pool cue is on the screen.
-Press "j" key to shift the ball left after a scratch or at the start of the game.
-Press "l" key to shift the ball left after a scratch or at the start of the game.
-Press left arrow key to angle the pool cue to the left from the perspective of the camera when lining up a shot.
-Press left arrow key to angle the pool cue to the left from the perspective of the camera when lining up a shot.
-Press left shift key to switch the camera view between bird's eye and cue view except when balls are moving.
-Press "b" key to change between day and night mode.
+ - Press and hold Spacebar key to take a shot when the pool cue is on the screen.
+ - Press "j" key to shift the ball left after a scratch or at the start of the game.
+ - Press "l" key to shift the ball left after a scratch or at the start of the game.
+ - Press left arrow key to angle the pool cue to the left from the perspective of the camera when lining up a shot.
+ - Press left arrow key to angle the pool cue to the left from the perspective of the camera when lining up a shot.
+ - Press left shift key to switch the camera view between bird's eye and cue view except when balls are moving.
+ - Press "b" key to change between day and night mode.
 
 ## Overview
 As our final project, we created a game of pool using Unity. The following are the five main components that went into our implementation of English pool.
@@ -24,8 +24,8 @@ As our final project, we created a game of pool using Unity. The following are t
 
 ### Learning the Basics of Unity
 We started our project by getting familiar with Unity's interface. Being absolute beginners, we approached the project by first researching rudimentary Unity projects that others have previously completed. Our idea to create billiards first came when we were fooling around with one of Unity's publically available introduction projects called Roll-a-ball. 
-Roll-a-ball is a "game" that has a ball that the player can control and 12 pick-ups that gain the player points. Doing a deep dive into the project files not only gave us the inspiration for pool, but also taught us some important aspects of Unity that we used as foundation for the rest of our project.
-We learned that Unity's UI was an important resource to not rewrite code that has already been completed by the creators of Unity. Object creation, scene initialization, and simple attribute allocation were all available, and we did not have to write a single line of code. Using new visual materials, physics materials, and prefabs were also equally straight-forward, although we did have to create some on our own from scratch. 
+Roll-a-ball is a "game" that has a ball that the player can control and 12 pick-ups that gain the player points. Doing a deep dive into the project files not only gave us the inspiration for pool, but also taught us some important aspects of Unity that we used as foundation for the rest of our project.\
+We learned that Unity's UI was an important resource to not rewrite code that has already been completed by the creators of Unity. Object creation, scene initialization, and simple attribute allocation were all available, and we did not have to write a single line of code. Using new visual materials, physics materials, and prefabs were also equally straight-forward, although we did have to create some on our own from scratch.\
 Roll-a-ball was also an incredible introduction to scripting (including collision detection and transformation), and its camera and player scripts were very helpful for our understanding of how to manipulate different attributes given to a specific object and how Unity processes information from its objects in each frame through Update() and FixedUpdate().
 Any other functions or features used were found in the documentation and the manual for Unity 5.x, and they will be mentioned throughout this write up.
 
@@ -55,13 +55,17 @@ As far as win conditions and rules go, we tried to emulate the real-life pool ga
     - The first player to sink a ball is assigned the type of ball that was sunk, and the opposite is assigned to the opposing player
  - Turn Change Conditions:
     - Turn does not change if a player sinks a ball of his type
+    - Turn does not change until all balls stop moving
     - Turn changes if a player only sinks balls of his opponent's type
     - Turn changes if a player does not sink any ball
     - Turn changes if a player scratches the cue ball (hits the cue ball out of play)
 
 ##### Cue Stick Position
+The cue stick position is always set to be an offset from the position of the cue ball. This means that the cue stick will always be pointing in the positive z direction when it is time for one of the players to shoot. Originally, we encountered an error where at various times the cue stick was not located in the correct spot after a shot. We found out that this was due to the change of orientation of the cue ball, since it sometimes rotates during gameplay. We solved this issue by resetting the cue ball's rotation every shot. This does not change the behavior of the game, as the orientation of the ball does not matter when the balls are stationary.
 
 ##### Score Keeping
+The score is kept using a counter and a kill plane. Below the pool table, there is a large plane that acts as an event trigger. If any ball crosses it, the game increments the score to the right person. If the cue ball enters the kill plane, it automatically resets to its starting position. As mentioned above, the game ends either way if the 8 ball hits the kill plane.
+This implementation worked perfectly until we decided to change turn change mechanic from waiting until the cue ball stops moving to waiting until all balls stops moving. Since the kill plane does not actually despawn the balls, the sunk balls were at freefall until the reset of the game, and in turn, did not allow for the change of turns. We fixed this by adding another plane of the same size just underneath the kill plane as the catch plane to catch all fallen balls. The catch plane's friction and bounciness coefficients are at their max values, so the balls quickly come to a halt the moment they hit the plane, thus allowing for the game to continue. 
 
 ##### Start of Game and Scratch Behavior
 Currently, the state of scratch only occurs if the cue ball goes out of play (hits the kill plane). When a player scratches the cue ball, the turn changes to the other player, and the cue ball and cue stick are reset to the game start position. In this state, the player is allowed to move the cue ball side to side to choose where to shoot it from. 
@@ -75,8 +79,8 @@ Toggling between the two modes is achieved by getting the 'LeftShift' press thro
 ##### Bird's Eye View
 Changing the camera to the bird's eye view was simple. Since FixedUpdate() is called every frame, we simply check if any of the balls are moving. If there is, then the camera uses Vector3.Lerp() and Quaternion.Lerp() functions to smoothly transfrom itself from its position to a fixed position over the table. A translation.y value of 25 was used because it snugly fit the entire table to the screen, and both rotation.x and rotation.y values of 90 degrees was used to orient the camera in the right direction.
 ##### Cue Stick View
-Implementing cue stick view was a little bit more complicated. At first, we used transform.RotateAround() function to mimic the behavior of a camera locked to the cue stick. However, this approach was ultimately unsatisfactory, as it was incredibly convoluted to find the correct position and rotation of the camera between each toggle between the two views. 
-Ultimately, we decided to move the camera in cue stick view using the cue stick frame, so that we can simply translate the camera to the same coordinates every time. This way, the translation is simple and elegant, and we can easily take care of the camera's rotation using Quaternion.LookRotation() function to "lock" it onto the cue ball. The conversion to cue stick frame was completed using transform.TransformPoint() and transform.InversTransformPoint().
+Implementing cue stick view was a little bit more complicated. At first, we used transform.RotateAround() function to mimic the behavior of a camera locked to the cue stick. However, this approach was ultimately unsatisfactory, as it was incredibly convoluted to find the correct position and rotation of the camera between each toggle between the two views.\
+Ultimately, we decided to move the camera in cue stick view using the cue stick frame, so that we can simply translate the camera to the same coordinates every time. This way, the translation is simple and elegant, and we can easily take care of the camera's rotation using Quaternion.LookRotation() function to "lock" it onto the cue ball. The conversion to cue stick frame was completed using transform.TransformPoint() and transform.InversTransformPoint().\
 Because we are using Lerp() to do all of our camera transformations, everything is animated, even when it follows the cue stick on button press. Although we had the option to not use Lerp() in this instance and make the camera seem glued onto the cue stick, we thought that the effect of the camera "following" the cue stick was both aesthetically pleasing and visually intuitive. 
 
 ### Light Control
