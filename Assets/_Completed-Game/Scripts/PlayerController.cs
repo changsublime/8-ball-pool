@@ -20,15 +20,33 @@ public class PlayerController : MonoBehaviour {
 	private float endTime = 0f;
 	private bool spacePressed = false; 
 	private Vector3 startPosition;
-	private bool scratched =  false;
+	private bool scratched = false;
+	private bool movable = true;
+	private Quaternion startRotation;
+	private CameraController camera;
+	private float lightIntensity = 0f;
+    private Light lt;
+    private CueStickController2 cueStickScript;
+    private GameObject cueStick;
+    private CameraController cameraScript;
+    private Renderer cueStickRenderer;
+    private Vector3 rightMove;
+    private Vector3 leftMove;
 	// At the start of the game..
 	void Start ()
 	{
 		// Assign the Rigidbody component to our private rb variable
+		rightMove = new Vector3(-.05f,0f,0f);
+		leftMove = new Vector3(.05f,0f,0f);
 		rb = GetComponent<Rigidbody>();
-
+		lt = GetComponent<Light>();
 		startPosition = transform.position;
-
+		startRotation = transform.rotation;
+		camera = GameObject.Find("Main Camera").GetComponent<CameraController>();
+		cueStick = GameObject.Find("Cue Stick");
+		cueStickScript = cueStick.GetComponent<CueStickController2>();
+		cameraScript = camera.GetComponent<CameraController>();
+		cueStickRenderer = cueStick.GetComponent<Renderer>();
 	}
 
 	public bool isMoving() {
@@ -37,14 +55,24 @@ public class PlayerController : MonoBehaviour {
 
 	public void resetBall() {
 		transform.position = startPosition;
+		transform.rotation = startRotation;
 		rb.AddForce(Vector3.zero);
 		rb.velocity = Vector3.zero;
 		scratched = false;
+		movable = true;
 	}
 
 	void Update() {
-		var cueStick = GameObject.Find("Cue Stick");
-		var cueStickScript = cueStick.GetComponent<CueStickController2>();
+		if (tag != "8 Ball") {
+ 			if (camera.isDark()) {
+ 				lightIntensity = Mathf.Lerp(lightIntensity,5f,.01f);
+ 				lt.intensity = lightIntensity;
+ 			}
+ 			else {
+ 				lightIntensity = Mathf.Lerp(lightIntensity,0f,.01f);
+ 				lt.intensity = lightIntensity;
+ 			}
+		}
 		if (Input.GetKeyDown("space") && !moving && turnChanged && !spacePressed) {
 			startTime = Time.frameCount;
 			spacePressed = true;
@@ -59,21 +87,38 @@ public class PlayerController : MonoBehaviour {
 			rb.AddForce(direction * hitTime * speed, ForceMode.Impulse);
 			spacePressed = false;
 		}
+		if (movable) {
+			if (Input.GetKey("j")) {
+				if ((transform.position + leftMove).x < 9 && (transform.position + leftMove).x > -9) {
+					transform.position = transform.position + leftMove;
+					cueStickScript.followBall(leftMove);
+				}
+			}
+			if (Input.GetKey("l")) {
+				if ((transform.position + rightMove).x < 9 && (transform.position + rightMove).x > -9) {
+					transform.position = transform.position + rightMove;
+					cueStickScript.followBall(rightMove);
+				}
+			}
+		}
 	}
 
 	// Each physics step..
 	void FixedUpdate ()
 	{
 		// Set some local float variables equal to the value of our Horizontal and Vertical Inputs
-		var cueStick = GameObject.Find("Cue Stick");
-		var cueStickScript = cueStick.GetComponent<CueStickController2>();
-		var camera = GameObject.Find("Main Camera");
-		var cameraScript = camera.GetComponent<CameraController>();
-		if (scratched) {
+		if (scratched && cueStickScript.noBallsMoving()) {
 			transform.position = startPosition;
 			rb.AddForce(Vector3.zero);
 			rb.velocity = Vector3.zero;
+			transform.rotation = startRotation;
+			turnChanged = false;
+			moving = false;
 			scratched = false;
+			movable = true;
+			cueStickScript.turnChange();
+			cameraScript.turnChange();
+			turnChanged = true;
 		}
 		// Create a Vector3 variable, and assign X and Z to feature our horizontal and vertical float variables above
 		//Vector3 movement = new Vector3 (0.0f, 0.0f, moveVertical);
@@ -83,17 +128,23 @@ public class PlayerController : MonoBehaviour {
 		//rb.AddForce (movement * speed);
 		if (rb.velocity.magnitude < .3 && !(rb.velocity == Vector3.zero)) {
 			rb.velocity = Vector3.zero;
+			transform.rotation = startRotation;
+			rb.angularVelocity = Vector3.zero;
 			moving = false;
 		}
-		if (GameObject.Find("Cue Stick").GetComponent<CueStickController2>().noBallsMoving() && !turnChanged) {
+		if (rb.velocity == Vector3.zero) {
+			transform.rotation = startRotation;
+		}
+		if (cueStickScript.noBallsMoving() && !turnChanged && !scratched) {
 			cueStickScript.turnChange();
 			cameraScript.turnChange();
 			turnChanged = true;
 		}
-		if (rb.velocity != Vector3.zero) {
+		if (rb.velocity != Vector3.zero && !moving) {
 			moving = true;
 			turnChanged = false;
-			cueStick.GetComponent<Renderer>().enabled = false;
+			cueStickRenderer.enabled = false;
+			movable = false;
 		}
 	}
 

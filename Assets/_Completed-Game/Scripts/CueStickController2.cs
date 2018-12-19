@@ -4,6 +4,7 @@
 using UnityEngine.UI;
 
 using System.Collections;
+using System.Collections.Generic;
 public class CueStickController2 : MonoBehaviour
 {
 	// Create public variables for player speed, and for the Text UI game objects
@@ -16,7 +17,7 @@ public class CueStickController2 : MonoBehaviour
 	private Rigidbody rb;
 	private bool turn = true;
 	private Renderer rend;
-	private Vector3 relativePos = new Vector3 (0.0f,-2.5f,-11.0f);
+	private Vector3 relativeToBall;
 	private Quaternion startRotation;
 	private Vector3 startPosition;
 	private string firstPlayerBalls = "None";
@@ -24,41 +25,47 @@ public class CueStickController2 : MonoBehaviour
 	private int firstPlayerCount = 0;
 	private int secondPlayerCount = 0;
 	private bool ballMade = false;
+    private bool firstPlayer = false;
+    private bool firstBall = false;
+    private GameObject cueBall;
+    private List<BallController> balls; 
+    private PlayerController cueBallScript;
     // Start is called before the first frame update
     void Start()
     {
+        balls = new List<BallController>();
     	startRotation = transform.rotation;
     	startPosition = transform.position;
+        cueBall = GameObject.Find("Cue Ball");
+        cueBallScript = cueBall.GetComponent<PlayerController>();
+        relativeToBall = cueBall.transform.InverseTransformPoint(transform.position);
         rb = GetComponent<Rigidbody>();
         //Fetch the Renderer from the GameObject
         rend = GetComponent<Renderer>();
-
+        cueBall = GameObject.Find("Cue Ball");
         playerText.text = "Player1's Turn";
         ballText.text = "None";
         winText.text = "";
+        for (int i = 0; i < 7; i++) {
+            balls.Add(GameObject.Find("Solids" + i.ToString()).GetComponent<BallController>());
+            balls.Add(GameObject.Find("Stripes" + i.ToString()).GetComponent<BallController>());
+        }
+        balls.Add(GameObject.Find("8 Ball").GetComponent<BallController>());
     }
 
     public bool noBallsMoving() {
     	bool ballMoving = false;
     	bool noBallMoving = true;
-    	for (int i = 0; i < 7; i++) {
-    		ballMoving = GameObject.Find("Solids" + i.ToString()).GetComponent<BallController>().isMoving();
-    		if (ballMoving) {
-    			noBallMoving = false;
-    		}
-    		ballMoving = GameObject.Find("Stripes" + i.ToString()).GetComponent<BallController>().isMoving();
+    	for (int i = 0; i < 15; i++) {
+    		ballMoving = balls[i].isMoving();
     		if (ballMoving) {
     			noBallMoving = false;
     		}
     	}
-    	ballMoving = GameObject.Find("8 Ball").GetComponent<BallController>().isMoving();
-    	if (ballMoving) {
-    		noBallMoving = false;
-    	}
-    	ballMoving = GameObject.Find("Cue Ball").GetComponent<PlayerController>().isMoving();
-    	if (ballMoving) {
-    		noBallMoving = false;
-    	}
+        ballMoving = cueBallScript.isMoving();
+        if (ballMoving) {
+            noBallMoving = false;
+        }
     	return noBallMoving;
     }
 
@@ -67,12 +74,11 @@ public class CueStickController2 : MonoBehaviour
     	transform.position = startPosition;
     	transform.rotation = startRotation;
     	ballMade = false;
-    	GameObject.Find("Cue Ball").GetComponent<PlayerController>().resetBall();
-    	GameObject.Find("8 Ball").GetComponent<BallController>().resetBall();
-    	for (int i = 0; i < 7; i++) {
-    		GameObject.Find("Solids" + i.ToString()).GetComponent<BallController>().resetBall();
-    		GameObject.Find("Stripes" + i.ToString()).GetComponent<BallController>().resetBall();
+        firstBall = false;
+    	for (int i = 0; i < 15; i++) {
+    		balls[i].resetBall();
     	}
+        cueBallScript.resetBall();
     	GameObject.Find("Main Camera").GetComponent<CameraController>().resetCamera();
     	turn = true;
     	firstPlayerBalls = "None";
@@ -126,31 +132,49 @@ public class CueStickController2 : MonoBehaviour
     			secondPlayerCount += 1;
     		}
     		ballMade = true;
-    		turn = !turn;
+    		firstPlayer = turn;
+            firstBall = true;
+            turn = !turn;
     	}
     	else {
     		if (turn && tag == firstPlayerBalls) {
     			firstPlayerCount += 1;
-    			turn = false;
+                if (!firstBall) {
+                    turn = false;
+                }
+                else {
+                    turn = !firstPlayer;
+                }
     		}
     		else if (!turn && tag == secondPlayerBalls) {
     			secondPlayerCount += 1;
-    			turn = true;
+                if (!firstBall) {
+                    turn = true;
+                }
+                else {
+                    turn = !firstPlayer;
+                }
     		}
     		else if (!turn && tag == firstPlayerBalls) {
     			firstPlayerCount += 1;
+                if (firstBall) {
+                    turn = !firstPlayer;
+                }
     		}
     		else {
     			secondPlayerCount += 1;
+                if (firstBall) {
+                    turn = !firstPlayer;
+                }
     		}
     	}
     }
 
     public void turnChange() {
+        firstBall = false;
     	turn = !turn;
     	transform.rotation = startRotation;
-	    Vector3 cueBallPos = GameObject.Find("Cue Ball").transform.position;
-	    rb.MovePosition(cueBallPos - relativePos);
+	    transform.position = cueBall.transform.TransformPoint(relativeToBall);
     	rend.enabled = true;
     	if (turn == true) {
     		playerText.text = "Player1's Turn";
@@ -162,13 +186,16 @@ public class CueStickController2 : MonoBehaviour
     	}
     }
 
+    public void followBall(Vector3 move) {
+        transform.position = transform.position + move;
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
-    	var cueBall = GameObject.Find("Cue Ball");
 		if (noBallsMoving()) {
 			float moveHorizontal = Input.GetAxis ("Horizontal");
-			transform.RotateAround(cueBall.transform.position, Vector3.up, moveHorizontal);
+			transform.RotateAround(cueBall.transform.position, Vector3.up, -moveHorizontal);
 		}
     }
 }
