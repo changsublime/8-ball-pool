@@ -1,6 +1,6 @@
 Win64
 PlayerPath?
-/Users/samuelbieler/Documents/final-project-sbcl10/8BallPoolWindows/8 Ball Pool.exe
+/Users/samuelbieler/Documents/final-project-sbcl10/8BallPoolWindowsx86_64/8 Ball Pool.exe
 SceneListBegin?
 Assets/sbclfinal.unity
 SceneListEnd?

@@ -33,7 +33,7 @@ public class CameraController : MonoBehaviour {
 	{
 		birdsEye = Quaternion.Euler(90f,90f,0f);
 		birdsEyePos = new Vector3(0f,25f,0f);
-		darkColor = new Color(20/255f,20/255f,20/255f);
+		darkColor = new Color(10/255f,10/255f,10/255f);
 		rb = GetComponent<Rigidbody>();
 		startRotation = transform.rotation;
 		startPosition = transform.position;
@@ -70,14 +70,7 @@ public class CameraController : MonoBehaviour {
     	else {
     		RenderSettings.ambientSkyColor = Color.Lerp(RenderSettings.ambientSkyColor,startColor,.01f);
     	}
-    }
-
-	// After the standard 'Update()' loop runs, and just before each frame is rendered..
-	void FixedUpdate ()
-	{
-		// Set the position of the Camera (the game object this script is attached to)
-		// to the player's position, plus the offset amount
-		if (cueStickScript.noBallsMoving()) {
+    	if (cueStickScript.noBallsMoving()) {
 			if (cueView == false){
 				transform.rotation = Quaternion.Lerp(transform.rotation, birdsEye, animationSpeed);
 				transform.position = Vector3.Lerp(transform.position, birdsEyePos, animationSpeed);
@@ -94,5 +87,12 @@ public class CameraController : MonoBehaviour {
 			transform.rotation = Quaternion.Lerp(transform.rotation, birdsEye, animationSpeed);
 			transform.position = Vector3.Lerp(transform.position, birdsEyePos, animationSpeed);
 		}
+    }
+
+	// After the standard 'Update()' loop runs, and just before each frame is rendered..
+	void FixedUpdate ()
+	{
+		// Set the position of the Camera (the game object this script is attached to)
+		// to the player's position, plus the offset amount
 	}
 }
