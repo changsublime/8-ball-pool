@@ -1,5 +1,5 @@
 # CS175 Final Project: Pool
-##### by Changseob Lim and Sam Bieler\
+##### by Changseob Lim and Sam Bieler
 ### Usage Instructions
 ##### Run Game
 In order to run the game you can run the 8BallPool.exe file inside of the 8BallPoolWindows+(your sys architecture) folder if you are on Windows. If you are on mac simply run the 8BallPool Application file in the main directory. As our computers are Macs this is the only build that has been tested. You can also run the game by opening the project in Unity and pressing the play button.
