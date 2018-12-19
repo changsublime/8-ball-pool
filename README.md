@@ -33,7 +33,8 @@ Any other functions or features used were found in the documentation and the man
 The scene was created using readily available resources provided by Unity. Our scene is composed of the following GameObjects (provided in the parentheses are Unity's basic 3D object shapes that were used to make the object):
  - Cue ball (Sphere)
  - Cue stick (Cylinder)
- - 7 solid and 7 striped balls (Sphere)
+ - 7 solid balls (Sphere) 
+ - 7 striped balls (Blender Mesh)
  - 8 ball (Sphere)
  - Table (Plane)
  - 6 walls (Cube)
@@ -41,7 +42,7 @@ The scene was created using readily available resources provided by Unity. Our s
  - Catch plane (Plane)
 
 ##### Building Meshes
-Vanilla Unity only supports creating materials that are solid in color, so it is rather silly to differentiate them as "solids" and "stripes." We wanted to make our game be as close an imitation of the actual pool as possible, so we learned the basics of a software called Blender in order to build meshes for our striped balls. 
+Out of the GameObjects listed above, only the 7 striped balls are not made up of a basic Unity shape. Vanilla Unity only supports creating materials that are solid in color, so it is rather silly to differentiate them as "solids" and "stripes." We wanted to make our game be as close an imitation of the actual pool as possible, so we learned the basics of a software called Blender in order to build meshes for our striped balls. 
 
 ### Game Mechanic
 ##### Logic
@@ -59,8 +60,9 @@ As far as win conditions and rules go, we tried to emulate the real-life pool ga
     - Turn changes if a player does not sink any ball
     - Turn changes if a player scratches the cue ball (hits the cue ball out of play)
 
-##### Cue Stick Position
-The cue stick position is always set to be an offset from the position of the cue ball. This means that the cue stick will always be pointing in the positive z direction when it is time for one of the players to shoot. Originally, we encountered an error where at various times the cue stick was not located in the correct spot after a shot. We found out that this was due to the change of orientation of the cue ball, since it sometimes rotates during gameplay. We solved this issue by resetting the cue ball's rotation every shot. This does not change the behavior of the game, as the orientation of the ball does not matter when the balls are stationary.
+##### Cue Stick
+The cue stick acts as an indicator for the players to know how the balls are going to be hit. It can rotate around the cue ball using the arrow keys, and it changes the angle at which the force will be released. We decided to give the cue stick no collsion code in order to make sure it does not interact with neighboring balls or walls.\
+The position of the cue stick is always set to be an offset from the position of the cue ball. This means that the cue stick will always be pointing in the positive z direction when it is time for one of the players to shoot. Originally, we encountered an error where at various times the cue stick was not located in the correct spot after a shot. We found out that this was due to the change of orientation of the cue ball, since it sometimes rotates during gameplay. We solved this issue by resetting the cue ball's rotation every shot. This does not change the behavior of the game, as the orientation of the ball does not matter when the balls are stationary.
 
 ##### Score Keeping
 The score is kept using a counter and a kill plane. Below the pool table, there is a large plane that acts as an event trigger. If any ball crosses it, the game increments the score to the right person. If the cue ball enters the kill plane, it automatically resets to its starting position. As mentioned above, the game ends either way if the 8 ball hits the kill plane.
@@ -76,13 +78,15 @@ The camera has two modes: one that follows the cue stick, and another that provi
 ##### Toggling
 Toggling between the two modes is achieved by getting the 'LeftShift' press through Input.GetKeyDown() and keeping a boolean to store which view is currently being used in the scene.
 ##### Bird's Eye View
-Changing the camera to the bird's eye view was simple. Since FixedUpdate() is called every frame, we simply check if any of the balls are moving. If there is, then the camera uses Vector3.Lerp() and Quaternion.Lerp() functions to smoothly transfrom itself from its position to a fixed position over the table. A translation.y value of 25 was used because it snugly fit the entire table to the screen, and both rotation.x and rotation.y values of 90 degrees was used to orient the camera in the right direction.
+Changing the camera to the bird's eye view was simple. Since FixedUpdate() is called at every update of the physics engine, we simply check if any of the balls are moving. If there is, then the camera uses Vector3.Lerp() and Quaternion.Lerp() functions to smoothly transfrom itself from its position to a fixed position over the table. A translation.y value of 25 was used because it snugly fit the entire table to the screen, and both rotation.x and rotation.y values of 90 degrees was used to orient the camera in the right direction.
 ##### Cue Stick View
 Implementing cue stick view was a little bit more complicated. At first, we used transform.RotateAround() function to mimic the behavior of a camera locked to the cue stick. However, this approach was ultimately unsatisfactory, as it was incredibly convoluted to find the correct position and rotation of the camera between each toggle between the two views.\
 Ultimately, we decided to move the camera in cue stick view using the cue stick frame, so that we can simply translate the camera to the same coordinates every time. This way, the translation is simple and elegant, and we can easily take care of the camera's rotation using Quaternion.LookRotation() function to "lock" it onto the cue ball. The conversion to cue stick frame was completed using transform.TransformPoint() and transform.InversTransformPoint().\
 Because we are using Lerp() to do all of our camera transformations, everything is animated, even when it follows the cue stick on button press. Although we had the option to not use Lerp() in this instance and make the camera seem glued onto the cue stick, we thought that the effect of the camera "following" the cue stick was both aesthetically pleasing and visually intuitive. 
 
 ### Light Control
+After being familiar with Unity's Lerp functions, light control was pretty easy to implement. In Unity, light primarily has two components: color and intensity. For the ambient light in the scene, we decided to keep its intensity constant and Lerp the color of the light from a blueish white to near-black. On the 'b' press at the start of the game, the effect is a slow animation from a bright to a nearly invisible scene - so we decided to add more sources of light as it got darker.\
+In Unity, every object can act as a source of light by adding a light attribute to it in the inspector. We made every ball other than the 8 ball a source of light, in order to give the nighttime table an arcade air-hockey look. This time around, we lerped the intensity value for the lights in the balls, and made it get brighter in the same rate that the room gets darker. 
 
 ### Possible Additions
 
