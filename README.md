@@ -72,15 +72,17 @@ This implementation worked perfectly until we decided to change turn change mech
 ##### Start of Game and Scratch Behavior
 Currently, the state of scratch only occurs if the cue ball goes out of play (hits the kill plane). When a player scratches the cue ball, the turn changes to the other player, and the cue ball and cue stick are reset to the game start position. In this state, the player is allowed to move the cue ball side to side to choose where to shoot it from. 
 
+##### Wall Glitch
+In our original implementation, balls would sometimes escape the boundaries set by the wall, if going at a fast enough speed. We realized that this was happening due to the physics engine checking the scene too infrequently. We solved this bug by increasing the speed at which the engine runs.
 
 ### Camera Control
 ###### All of camera's transformations are implemented in CameraController.cs.
 The camera has two modes: one that follows the cue stick, and another that provides a birds eye view of the entire table. At the start of the game and before each shot, the camera is defaulted to cue stick view. At any time when no balls are moving, the user can click their 'LeftShift' key to toggle between cue view and birds eye view. However, when the balls are in play, the camera is locked to the bird's eye view, and the user has no control over the camera or the scene.
 ##### Toggling
-Toggling between the two modes is achieved by getting the 'LeftShift' press through Input.GetKeyDown() and keeping a boolean to store which view is currently being used in the scene.
+Toggling between the two modes is achieved by getting the 'LeftShift' press through Input.GetKeyDown() and keeping a boolean to store which view is currently being used in the scene. We originally toggled between the modes in FixedUpdate() that gets updated at each physics step. However, while fixing the wall glitch mentioned above, we found that this resulted in frequent double pressing of the 'LeftShift' key. We realized our mistake, and moved the toggle to Update(), that only gets updated at each frame.
 ##### Bird's Eye View
 <img src="/birdseyeview.png" alt="Bird's Eye View" title="Bird's Eye View" width="400" />\
-Changing the camera to the bird's eye view was simple. Since FixedUpdate() is called at every update of the physics engine, we simply check if any of the balls are moving. If there is, then the camera uses Vector3.Lerp() and Quaternion.Lerp() functions to smoothly transfrom itself from its position to a fixed position over the table. A translation.y value of 25 was used because it snugly fit the entire table to the screen, and both rotation.x and rotation.y values of 90 degrees was used to orient the camera in the right direction.
+Changing the camera to the bird's eye view was simple. Since Update() is called at every frame, we simply check if any of the balls are moving. If there is, then the camera uses Vector3.Lerp() and Quaternion.Lerp() functions to smoothly transfrom itself from its position to a fixed position over the table. A translation.y value of 25 was used because it snugly fit the entire table to the screen, and both rotation.x and rotation.y values of 90 degrees was used to orient the camera in the right direction.
 ##### Cue Stick View
 <img src="/cueview.png" alt="Cue Stick View" title="Cue Stick View" width="400" />\
 Implementing cue stick view was a little bit more complicated. At first, we used transform.RotateAround() function to mimic the behavior of a camera locked to the cue stick. However, this approach was ultimately unsatisfactory, as it was incredibly convoluted to find the correct position and rotation of the camera between each toggle between the two views.\
