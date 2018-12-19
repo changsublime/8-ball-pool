@@ -88,14 +88,7 @@ Ultimately, we decided to move the camera in cue stick view using the cue stick 
 Because we are using Lerp() to do all of our camera transformations, everything is animated, even when it follows the cue stick on button press. Although we had the option to not use Lerp() in this instance and make the camera seem glued onto the cue stick, we thought that the effect of the camera "following" the cue stick was both aesthetically pleasing and visually intuitive. 
 
 ### Light Control
-<p>
-    <img src="/nightbad.png" alt="nightbad" title="nightbad" width="300" />
-</p>
-<p>
-    <em>Night mode before increasing pixel light count</em>
-</p>\
 | <img src="/nightbad.png" alt="nightbad" title="nightbad" width="300" /> | 
-|:--:| 
 | *Night mode before increasing pixel light count* |
 After being familiar with Unity's Lerp functions, light control was pretty easy to implement. In Unity, light primarily has two components: color and intensity. For the ambient light in the scene, we decided to keep its intensity constant and Lerp the color of the light from a blueish white to near-black. On the 'b' press at the start of the game, the effect is a slow animation from a bright to a nearly invisible scene - so we decided to add more sources of light as it got darker.\
 In Unity, every object can act as a source of light by adding a light attribute to it in the inspector. We made every ball other than the 8 ball a source of light, in order to give the nighttime table an arcade air-hockey look. This time around, we lerped the intensity value for the lights in the balls, and made it get brighter in the same rate that the room gets darker.\
