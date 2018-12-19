@@ -41,13 +41,17 @@ As far as win conditions and rules go, we tried to emulate the real-life pool ga
     - The first player to sink a ball is assigned the type of ball that was sunk, and the opposite is assigned to the opposing player
  - Turn Change Conditions:
     - Turn does not change if a player sinks a ball of his type
+    - Turn does not change until all balls stop moving
     - Turn changes if a player only sinks balls of his opponent's type
     - Turn changes if a player does not sink any ball
     - Turn changes if a player scratches the cue ball (hits the cue ball out of play)
 
 ##### Cue Stick Position
+The cue stick position is always set to be an offset from the position of the cue ball. This means that the cue stick will always be pointing in the positive z direction when it is time for one of the players to shoot. Originally, we encountered an error where at various times the cue stick was not located in the correct spot after a shot. We found out that this was due to the change of orientation of the cue ball, since it sometimes rotates during gameplay. We solved this issue by resetting the cue ball's rotation every shot. This does not change the behavior of the game, as the orientation of the ball does not matter when the balls are stationary.
 
 ##### Score Keeping
+The score is kept using a counter and a kill plane. Below the pool table, there is a large plane that acts as an event trigger. If any ball crosses it, the game increments the score to the right person. If the cue ball enters the kill plane, it automatically resets to its starting position. As mentioned above, the game ends either way if the 8 ball hits the kill plane.
+This implementation worked perfectly until we decided to change turn change mechanic from waiting until the cue ball stops moving to waiting until all balls stops moving. Since the kill plane does not actually despawn the balls, the sunk balls were at freefall until the reset of the game, and in turn, did not allow for the change of turns. We fixed this by adding another plane of the same size just underneath the kill plane as the catch plane to catch all fallen balls. The catch plane's friction and bounciness coefficients are at their max values, so the balls quickly come to a halt the moment they hit the plane, thus allowing for the game to continue. 
 
 ##### Start of Game and Scratch Behavior
 Currently, the state of scratch only occurs if the cue ball goes out of play (hits the kill plane). When a player scratches the cue ball, the turn changes to the other player, and the cue ball and cue stick are reset to the game start position. In this state, the player is allowed to move the cue ball side to side to choose where to shoot it from. 
