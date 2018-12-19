@@ -42,6 +42,7 @@ The scene was created using readily available resources provided by Unity. Our s
  - Catch plane (Plane)
 
 ##### Building Meshes
+<img src="/mesh1.png" alt="Mesh1" title="Mesh1" width="300" />  <img src="/mesh2.png" alt="Mesh2" title="Mesh2" width="300" />
 Out of the GameObjects listed above, only the 7 striped balls are not made up of a basic Unity shape. Vanilla Unity only supports creating materials that are solid in color, so it is rather silly to differentiate them as "solids" and "stripes." We wanted to make our game be as close an imitation of the actual pool as possible, so we learned the basics of a software called Blender in order to build meshes for our striped balls. 
 
 ### Game Mechanic
@@ -78,10 +79,10 @@ The camera has two modes: one that follows the cue stick, and another that provi
 ##### Toggling
 Toggling between the two modes is achieved by getting the 'LeftShift' press through Input.GetKeyDown() and keeping a boolean to store which view is currently being used in the scene.
 ##### Bird's Eye View
-![Bird's Eye View](/birdseyeview.png "Bird's Eye View")\
-<img src="/birdseyeview.png" alt="Bird's Eye View" title="Bird's Eye View" width="300" />\
+<img src="/birdseyeview.png" alt="Bird's Eye View" title="Bird's Eye View" width="400" />\
 Changing the camera to the bird's eye view was simple. Since FixedUpdate() is called at every update of the physics engine, we simply check if any of the balls are moving. If there is, then the camera uses Vector3.Lerp() and Quaternion.Lerp() functions to smoothly transfrom itself from its position to a fixed position over the table. A translation.y value of 25 was used because it snugly fit the entire table to the screen, and both rotation.x and rotation.y values of 90 degrees was used to orient the camera in the right direction.
 ##### Cue Stick View
+<img src="/cueview.png" alt="Cue Stick View" title="Cue Stick View" width="400" />\
 Implementing cue stick view was a little bit more complicated. At first, we used transform.RotateAround() function to mimic the behavior of a camera locked to the cue stick. However, this approach was ultimately unsatisfactory, as it was incredibly convoluted to find the correct position and rotation of the camera between each toggle between the two views.\
 Ultimately, we decided to move the camera in cue stick view using the cue stick frame, so that we can simply translate the camera to the same coordinates every time. This way, the translation is simple and elegant, and we can easily take care of the camera's rotation using Quaternion.LookRotation() function to "lock" it onto the cue ball. The conversion to cue stick frame was completed using transform.TransformPoint() and transform.InversTransformPoint().\
 Because we are using Lerp() to do all of our camera transformations, everything is animated, even when it follows the cue stick on button press. Although we had the option to not use Lerp() in this instance and make the camera seem glued onto the cue stick, we thought that the effect of the camera "following" the cue stick was both aesthetically pleasing and visually intuitive. 
