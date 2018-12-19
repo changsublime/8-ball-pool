@@ -89,9 +89,9 @@ Because we are using Lerp() to do all of our camera transformations, everything 
 
 ### Light Control
 <p>
-    <img src="/nightbad.png" alt="nightbad" title="nightbad" width="400" />\
+    <img src="/nightbad.png" alt="nightbad" title="nightbad" width="300" />
     <em>Night mode before increasing pixel light count</em>
-</p>
+</p>\
 After being familiar with Unity's Lerp functions, light control was pretty easy to implement. In Unity, light primarily has two components: color and intensity. For the ambient light in the scene, we decided to keep its intensity constant and Lerp the color of the light from a blueish white to near-black. On the 'b' press at the start of the game, the effect is a slow animation from a bright to a nearly invisible scene - so we decided to add more sources of light as it got darker.\
 In Unity, every object can act as a source of light by adding a light attribute to it in the inspector. We made every ball other than the 8 ball a source of light, in order to give the nighttime table an arcade air-hockey look. This time around, we lerped the intensity value for the lights in the balls, and made it get brighter in the same rate that the room gets darker.\
 The lights and shadows of our first implementation looked very polygonal and pixelated. We later found out that the problem was a low count of pixel light count, which is a project variable that we had not accounted for. After we increased the value, the night view of our pool game looks true to our inspiration.
